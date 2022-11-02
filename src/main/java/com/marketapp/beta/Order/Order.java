@@ -21,10 +21,10 @@ public class Order {
             strategy = GenerationType.SEQUENCE,
             generator = "order_sequence"
     )
-    Long id;
-    String status;
-    Float totalPrice;
-    Float totalCost;
+    private Long id;
+    private String status;
+    private Float totalPrice;
+    private Float totalCost;
 
     public Order(String status) {
         this.status = status;

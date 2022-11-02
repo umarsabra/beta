@@ -2,6 +2,7 @@ package com.marketapp.beta.Order;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
@@ -18,8 +19,12 @@ public class OrderService {
         }
         else {
             Order newPendingOrder = new Order("pending");
-            return  orderRepository.save(newPendingOrder);
+            return orderRepository.save(newPendingOrder);
 
         }
+    }
+
+    Order addItemToOrder(@RequestBody Long itemId){
+
     }
 }
