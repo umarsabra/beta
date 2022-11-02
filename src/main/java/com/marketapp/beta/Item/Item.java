@@ -1,15 +1,15 @@
 package com.marketapp.beta.Item;
 
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 
 @Data
 @Entity
+@ToString
 @NoArgsConstructor
 public class Item {
     @Id
@@ -19,16 +19,17 @@ public class Item {
             allocationSize = 1
     )
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE
+            strategy = GenerationType.SEQUENCE,
+            generator = "item_sequence"
     )
     Long id;
     String title;
-    Float price;
     Long barcode;
+    Float price;
+    Integer quantity;
+    Float totalCost;
+    Boolean isWeight;
+    @Transient
+    Float costPerItem;
 
-    public Item(String title, Float price, Long barcode) {
-        this.title = title;
-        this.price = price;
-        this.barcode = barcode;
-    }
 }
