@@ -7,10 +7,8 @@ import lombok.ToString;
 import javax.persistence.*;
 
 
-@Data
 @Entity
 @ToString
-@NoArgsConstructor
 public class Item {
     @Id
     @SequenceGenerator(
@@ -28,8 +26,46 @@ public class Item {
     Float price;
     Integer quantity;
     Float totalCost;
-    Boolean isWeight;
     @Transient
     Float costPerItem;
 
+    public Item() {
+    }
+
+    public Item(String title, Long barcode, Float price, Integer quantity, Float totalCost) {
+        this.title = title;
+        this.barcode = barcode;
+        this.price = price;
+        this.quantity = quantity;
+        this.totalCost = totalCost;
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Long getBarcode() {
+        return barcode;
+    }
+
+    public Float getPrice() {
+        return price;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public Float getTotalCost() {
+        return totalCost;
+    }
+
+    public Float getCostPerItem() {
+        return totalCost/quantity;
+    }
 }

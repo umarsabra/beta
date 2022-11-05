@@ -15,7 +15,6 @@ public class ItemController {
 
     @PostMapping
     Item postItem(@RequestBody Item item){
-        System.out.println("omar");
         return itemService.addItem(item);
     }
 

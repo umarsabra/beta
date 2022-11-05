@@ -1,10 +1,12 @@
 package com.marketapp.beta.Order;
 
 
+import com.marketapp.beta.OrderItem.OrderItem;
 import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -26,7 +28,15 @@ public class Order {
     private Float totalPrice;
     private Float totalCost;
 
+
+
     public Order(String status) {
         this.status = status;
+    }
+
+    public Order(String status, Float totalPrice, Float totalCost) {
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.totalCost = totalCost;
     }
 }
