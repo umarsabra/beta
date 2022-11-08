@@ -11,10 +11,14 @@ public class ItemService {
 
     @Autowired
     ItemRepository itemRepository;
-    Item addItem(Item item){
+    public Item addItem(Item item){
        return itemRepository.save(item);
     }
-    List<Item> getAllItems(){
+    public List<Item> getAllItems(){
         return itemRepository.findAll();
+    }
+
+    public Item getItemByBarcode(Long barcode) {
+        return itemRepository.findItemByBarcode(barcode);
     }
 }

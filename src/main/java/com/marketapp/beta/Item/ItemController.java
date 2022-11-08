@@ -1,9 +1,12 @@
 package com.marketapp.beta.Item;
 
 
+import com.marketapp.beta.Exception.ItemNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -14,13 +17,22 @@ public class ItemController {
     ItemService itemService;
 
     @PostMapping
-    Item postItem(@RequestBody Item item){
+    public Item createItem(@RequestBody @Valid Item item){
         return itemService.addItem(item);
     }
 
     @GetMapping
-    List<Item> getItems(){
+    public List<Item> getItems(){
         return itemService.getAllItems();
+    }
+
+    @GetMapping("/{barcode}")
+    public ResponseEntity<Item> getItemByBarcode(@PathVariable Long barcode) throws ItemNotFoundException {
+        Item item = itemService.getItemByBarcode(barcode);
+        if(item == null){
+            throw new ItemNotFoundException("Item with barcode: "+ barcode +" was not found");
+        }
+        return ResponseEntity.ok(item);
     }
 
 }

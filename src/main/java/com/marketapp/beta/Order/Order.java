@@ -3,6 +3,7 @@ package com.marketapp.beta.Order;
 
 import com.marketapp.beta.OrderItem.OrderItem;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @Table(name = "orders")
 @ToString
+@NoArgsConstructor
 public class Order {
     @Id
     @SequenceGenerator(
@@ -29,10 +31,6 @@ public class Order {
     private Float totalCost;
 
 
-
-    public Order(String status) {
-        this.status = status;
-    }
 
     public Order(String status, Float totalPrice, Float totalCost) {
         this.status = status;

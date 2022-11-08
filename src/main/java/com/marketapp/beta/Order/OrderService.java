@@ -1,16 +1,22 @@
 package com.marketapp.beta.Order;
 
+import com.marketapp.beta.DTO.OrderDetailsDto;
+import com.marketapp.beta.DTO.OrderItemCreationDto;
+import com.marketapp.beta.DTO.OrderItemDto;
+
 import com.marketapp.beta.Item.Item;
 import com.marketapp.beta.Item.ItemRepository;
 import com.marketapp.beta.OrderItem.OrderItem;
 import com.marketapp.beta.OrderItem.OrderItemRepository;
-import com.marketapp.beta.Request.OrderItemRequest;
-import com.marketapp.beta.Request.OrderRequest;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+
+
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,28 +24,25 @@ import java.util.Optional;
 public class OrderService {
     @Autowired
     OrderRepository orderRepository;
-
     @Autowired
     OrderItemRepository orderItemRepository;
-
     @Autowired
     ItemRepository itemRepository;
 
 
 
     @Transactional
-    void createPendingOrder(OrderItemRequest orderItemRequest){
+    public OrderDetailsDto createPendingOrder(OrderItemCreationDto orderItemRequest) {
         //Get the item barcode and quantity form the request body
         Long orderItemBarcode = orderItemRequest.getBarcode();
         Integer orderItemQuantity = orderItemRequest.getQuantity();
+
 
         //Get item id, price, cost per item, quantity
         Item item = itemRepository.findItemByBarcode(orderItemBarcode);
         Float totalCost = item.getCostPerItem() * orderItemQuantity;
         Float totalPrice = item.getPrice() * orderItemQuantity;
 
-
-        //Check if order item quantity is less than the inventory
 
         //Create order object with pending status
         Order order = new Order(
@@ -48,63 +51,82 @@ public class OrderService {
                 totalCost
         );
 
-        Order savedOrder = orderRepository.save(order);
+        Order newPendingOrder = orderRepository.save(order);
 
         //Create order item object
         OrderItem orderItem = new OrderItem(
                 orderItemQuantity,
+                item.getPrice(),
                 totalPrice,
                 totalCost,
                 item.getId(),
-                savedOrder.getId()
+                newPendingOrder.getId()
 
         );
 
-        orderItemRepository.save(orderItem);
+        OrderItem savedOrderItem = orderItemRepository.save(orderItem);
+
+
+        OrderItemDto orderItemResponse = new OrderItemDto(
+                savedOrderItem.getId(),
+                item.getTitle(),
+                savedOrderItem.getQuantity(),
+                item.getPrice(),
+                savedOrderItem.getTotalPrice(),
+                savedOrderItem.getTotalCost()
+        );
+
+        return new OrderDetailsDto(
+                newPendingOrder.getId(),
+                newPendingOrder.getTotalPrice(),
+                newPendingOrder.getTotalCost(),
+                List.of(orderItemResponse)
+        );
 
 
         }
 
 
-    @Transactional
-    void checkoutOrder(Long orderId){
+    public Optional<Order> getPendingOrder() {
+        return orderRepository.findPendingOrder();
+    }
 
-        Optional<Order> order = orderRepository.findById(orderId);
+    public OrderDetailsDto updateOrderDetails(Long orderId) {
+        Float totalPrice = 0f;
+        Float totalCost = 0f;
 
-        if(order.isPresent()){
+        List<OrderItem> orderItems = orderItemRepository.getOrderItems(orderId);
 
-            List<OrderItem> orderItems = orderItemRepository.findByOrderId(order.get().getId());
+        for (OrderItem orderItem : orderItems) {
+            totalPrice += orderItem.getTotalPrice();
+            totalCost += orderItem.getTotalCost();
+        }
 
-            for (OrderItem orderItem : orderItems) {
+        //Get orderItems
+        List<OrderItem> updatedOrderItems = orderItemRepository.getOrderItems(orderId);
+        List<OrderItemDto> orderItemDtoList = new ArrayList<>();
+        for (OrderItem orderItem : updatedOrderItems) {
+            OrderItemDto orderItemDto = new OrderItemDto(
+                    orderItem.getId(),
+                    orderItem.getTitle(),
+                    orderItem.getQuantity(),
+                    orderItem.getPrice(),
+                    orderItem.getTotalPrice(),
+                    orderItem.getTotalCost()
 
-                Integer orderItemQuantity = orderItem.getQuantity();
-                Long orderItemId = orderItem.getId();
-                itemRepository.sellItem(orderItemQuantity, orderItemId);
-
-            }
-
-            orderRepository.updateOrderStatus("completed", orderId);
-
+            );
+            orderItemDtoList.add(orderItemDto);
         }
 
 
 
+        return new OrderDetailsDto(
+                orderId,
+               totalPrice,
+               totalCost,
+                orderItemDtoList
+        );
+
+
     }
-
-
-
-
-    Optional<Order> getOrder(Long orderId){
-        return orderRepository.findById(orderId);
-    }
-
-
-    List<Order> getCompleteOrders(){
-        return orderRepository.findByStatus("completed");
-    }
-
-    Order getCurrentPendingOrder(){
-        return orderRepository.findByStatus("pending").get(0);
-    }
-
 }

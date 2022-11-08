@@ -1,14 +1,20 @@
 package com.marketapp.beta.Item;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 
 @Entity
 @ToString
+@Builder
+@AllArgsConstructor
 public class Item {
     @Id
     @SequenceGenerator(
@@ -20,14 +26,21 @@ public class Item {
             strategy = GenerationType.SEQUENCE,
             generator = "item_sequence"
     )
-    Long id;
-    String title;
-    Long barcode;
-    Float price;
-    Integer quantity;
-    Float totalCost;
+    private Long id;
+    @NotNull
+    private String title;
+    @NotNull
+    private Long barcode;
+
+    @NotNull
+    private Float price;
+
+    @Min(1)
+    private Integer quantity;
+    @NotNull
+    private Float totalCost;
     @Transient
-    Float costPerItem;
+    private Float costPerItem;
 
     public Item() {
     }
