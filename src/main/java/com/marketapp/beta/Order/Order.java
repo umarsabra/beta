@@ -1,10 +1,9 @@
 package com.marketapp.beta.Order;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.marketapp.beta.OrderItem.OrderItem;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,6 +13,8 @@ import java.util.List;
 @Table(name = "orders")
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Order {
     @Id
     @SequenceGenerator(
@@ -27,8 +28,14 @@ public class Order {
     )
     private Long id;
     private String status;
+    @JsonProperty("total_price")
     private Float totalPrice;
+    @JsonProperty("total_cost")
     private Float totalCost;
+
+    @Transient
+    @JsonProperty("order_items")
+    private List<OrderItem> orderItems;
 
 
 
@@ -37,4 +44,5 @@ public class Order {
         this.totalPrice = totalPrice;
         this.totalCost = totalCost;
     }
+
 }

@@ -1,12 +1,13 @@
 package com.marketapp.beta.Item;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -38,7 +39,9 @@ public class Item {
     @Min(1)
     private Integer quantity;
     @NotNull
+    @JsonProperty("total_cost")
     private Float totalCost;
+    @JsonProperty("cost_per_item")
     @Transient
     private Float costPerItem;
 

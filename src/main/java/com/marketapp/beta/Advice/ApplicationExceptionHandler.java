@@ -1,7 +1,6 @@
 package com.marketapp.beta.Advice;
 
-import com.marketapp.beta.Exception.ItemNotFoundException;
-import com.marketapp.beta.Exception.OrderItemNotFoundException;
+import com.marketapp.beta.Exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,7 +27,7 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(ItemNotFoundException.class)
     public Map<String, String> handleItemException(ItemNotFoundException ex){
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("errorMessage", ex.getMessage());
+        errorMap.put("error_message", ex.getMessage());
         return errorMap;
     }
 
@@ -36,7 +35,31 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(OrderItemNotFoundException.class)
     public Map<String, String> handleOrderItemException(OrderItemNotFoundException ex){
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("errorMessage", ex.getMessage());
+        errorMap.put("error_message", ex.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(PendingOrderNotFoundException.class)
+    public Map<String, String> handlePendingOrderException(PendingOrderNotFoundException ex){
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error_message", ex.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(OrderNotFoundException.class)
+    public Map<String, String> handleOrderException(OrderNotFoundException e){
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error_message", e.getMessage());
+        return errorMap;
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(ItemAlreadyExistsException.class)
+    public Map<String, String> handleItemException(ItemAlreadyExistsException e){
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error_message", e.getMessage());
         return errorMap;
     }
 }

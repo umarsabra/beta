@@ -1,6 +1,7 @@
 package com.marketapp.beta.Item;
 
 
+import com.marketapp.beta.Exception.ItemAlreadyExistsException;
 import com.marketapp.beta.Exception.ItemNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class ItemController {
     ItemService itemService;
 
     @PostMapping
-    public Item createItem(@RequestBody @Valid Item item){
+    public Item createItem(@RequestBody @Valid Item item) throws ItemAlreadyExistsException {
         return itemService.addItem(item);
     }
 

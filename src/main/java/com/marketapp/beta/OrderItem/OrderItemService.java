@@ -1,43 +1,78 @@
 package com.marketapp.beta.OrderItem;
 
-import com.marketapp.beta.DTO.OrderDetailsDto;
+
+import com.marketapp.beta.Dto.OrderItemCreationDto;
+import com.marketapp.beta.Item.Item;
+
+import com.marketapp.beta.Order.Order;
 import com.marketapp.beta.Order.OrderService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 
 import java.util.List;
-
-
+import java.util.Optional;
 
 
 @Service
+@Transactional
 public class OrderItemService {
     @Autowired
     OrderItemRepository orderItemRepository;
     @Autowired
     OrderService orderService;
 
-    //Add item to pending order returns order
-    @Transactional
-    public OrderDetailsDto addOrderItemToPendingOrder(OrderItem newOrderItem, Long pendingOrderId) {
+
+    public List<OrderItem> addOrderItemToPendingOrder(OrderItemCreationDto orderItemCreationDto, Item item, Long pendingOrderId) {
+        Integer quantity = orderItemCreationDto.getQuantity();
+        Float totalPrice = item.getPrice() * quantity;
+        Float totalCost = item.getCostPerItem() * quantity;
+        OrderItem newOrderItem = new OrderItem(
+                quantity,
+                totalPrice,
+                totalCost,
+                item.getId(),
+                pendingOrderId
+        );
+
         orderItemRepository.save(newOrderItem);
-        return orderService.updateOrderDetails(pendingOrderId);
+        orderService.updateOrderDetails(pendingOrderId);
+        return orderItemRepository.findOrderItemsWithItemsInformation(pendingOrderId);
 
     }
 
+    public List<OrderItem> updatePendingOrderItemQuantity(Integer newQuantity, Item requestItem, OrderItem orderItem){
+        Float totalPrice = requestItem.getPrice() * newQuantity;
+        Float totalCost = requestItem.getCostPerItem() * newQuantity;
 
-    public List<OrderItem> findOrderItems(Long orderId){
-        return orderItemRepository.findByOrderId(orderId);
+        orderItemRepository.updateOrderItem(newQuantity, totalPrice, totalCost, orderItem.getId());
+
+        orderService.updateOrderDetails(orderItem.getOrderId());
+        return orderItemRepository.findOrderItemsWithItemsInformation(orderItem.getOrderId());
+
     }
-    public List<OrderItem> getOrderItems(Long orderId){
-        return orderItemRepository.findByOrderId(orderId);
+
+    public List<OrderItem> getOrderItemsWithItemsInformation(Long orderItemId){
+        return orderItemRepository.findOrderItemsWithItemsInformation(orderItemId);
+    }
+
+    public OrderItem getOrderItemWithItemInformation(Long orderItemId){
+        return orderItemRepository.findOrderItemWithItemInformation(orderItemId);
+    }
+
+    public Order removeOrderItemFromPendingOrder(Long pendingOrderId, Long orderItemId){
+        orderItemRepository.deleteOrderItemFromOrder(pendingOrderId, orderItemId);
+        orderService.updateOrderDetails(pendingOrderId);
+        List<OrderItem> updatedOrderItems = orderItemRepository.findOrderItemsWithItemsInformation(pendingOrderId);
+        Order updatedOrder = orderService.getOrderById(pendingOrderId);
+        updatedOrder.setOrderItems(updatedOrderItems);
+        return updatedOrder;
     }
 
 
-
-    public void updateOrderItem(Integer quantity, Float totalPrice, Float totalCost, Long orderItemId) {
-         orderItemRepository.updateOrderItem(quantity, totalPrice, totalCost, orderItemId);
+    public Optional<OrderItem> getOrderItem(Long orderItemId) {
+        return orderItemRepository.findById(orderItemId);
     }
 }

@@ -2,9 +2,9 @@ package com.marketapp.beta.OrderItem;
 
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -14,6 +14,8 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@ToString
 public class OrderItem  {
     @Id
     @SequenceGenerator(
@@ -27,21 +29,30 @@ public class OrderItem  {
     )
     private Long id;
     @Transient
-    public String title;
+    @JsonProperty("title")
+    public String itemTitle;
     @Transient
-    public Long barcode;
+    @JsonIgnore
+    public Long itemBarcode;
     private Integer quantity;
     @Transient
-    private Float price;
+    @JsonProperty("price")
+    private Float itemPrice;
+
+    @JsonProperty("total_price")
     private Float totalPrice;
+
+    @JsonProperty("total_cost")
     private Float totalCost;
+    @JsonProperty("item_id")
     private Long itemId;
 
+    @JsonIgnore
     private Long orderId;
 
     public OrderItem(Integer quantity, Float price, Float totalPrice, Float totalCost, Long itemId, Long orderId) {
         this.quantity = quantity;
-        this.price = price;
+        this.itemPrice = price;
         this.totalPrice = totalPrice;
         this.totalCost = totalCost;
         this.itemId = itemId;
@@ -55,4 +66,6 @@ public class OrderItem  {
         this.itemId = itemId;
         this.orderId = orderId;
     }
+
+
 }
