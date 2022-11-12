@@ -4,6 +4,7 @@ package com.marketapp.beta.Item;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @ToString
+@Data
 @Builder
 @AllArgsConstructor
 public class Item {
@@ -31,11 +33,11 @@ public class Item {
     @NotNull
     private String title;
     @NotNull
-    private Long barcode;
-
+    private String barcode;
+    @Transient
+    private String priceBarcode;
     @NotNull
     private Float price;
-
     @Min(1)
     private Integer quantity;
     @NotNull
@@ -45,10 +47,13 @@ public class Item {
     @Transient
     private Float costPerItem;
 
+    @NotNull
+    private Boolean isWeightItem;
+
     public Item() {
     }
 
-    public Item(String title, Long barcode, Float price, Integer quantity, Float totalCost) {
+    public Item(String title, String barcode, Float price, Integer quantity, Float totalCost) {
         this.title = title;
         this.barcode = barcode;
         this.price = price;
@@ -57,31 +62,11 @@ public class Item {
 
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public Long getBarcode() {
-        return barcode;
-    }
-
-    public Float getPrice() {
-        return price;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public Float getTotalCost() {
-        return totalCost;
-    }
 
     public Float getCostPerItem() {
         return totalCost/quantity;
+    }
+    public Float getPrice(){
+        return price;
     }
 }

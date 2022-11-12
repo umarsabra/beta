@@ -29,13 +29,15 @@ public class OrderService {
 
 
 
-    public Order createPendingOrder(OrderItemCreationDto orderItemRequest,Item item) {
+    public Order createPendingOrder(Integer actualQuantity, Integer physicalQuantity, String priceBarcode,Item item) {
 
-        Integer orderItemQuantity = orderItemRequest.getQuantity();
+        Float totalCost = item.getCostPerItem() * actualQuantity;
+        float totalPrice = item.getPrice() * actualQuantity;
 
-
-        Float totalCost = item.getCostPerItem() * orderItemQuantity;
-        Float totalPrice = item.getPrice() * orderItemQuantity;
+        if(item.getIsWeightItem()){
+            Float gramPrice = item.getPrice() / 1000;
+            totalPrice = actualQuantity * gramPrice;
+        }
 
 
         Order newPendingOrder = orderRepository.save(new Order(
@@ -48,9 +50,11 @@ public class OrderService {
         OrderItem orderItem =  OrderItem.builder()
                 .itemId(item.getId())
                 .itemBarcode(item.getBarcode())
+                .priceBarcode(priceBarcode)
                 .itemPrice(item.getPrice())
                 .itemTitle(item.getTitle())
-                .quantity(orderItemQuantity)
+                .quantity(actualQuantity)
+                .physicalQuantity(physicalQuantity)
                 .totalPrice(totalPrice)
                 .totalCost(totalCost)
                 .orderId(newPendingOrder.getId())

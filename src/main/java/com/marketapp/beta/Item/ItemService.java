@@ -17,9 +17,9 @@ public class ItemService {
     @Autowired
     ItemRepository itemRepository;
     public Item addItem(Item item) throws ItemAlreadyExistsException {
-        Item item1 = itemRepository.findItemByBarcode(item.getBarcode());
-        if(item1 != null) {
-            throw new ItemAlreadyExistsException("item with barcode: " + item1.getBarcode() + " already exist");
+        Optional<Item> item1 = itemRepository.findItemByBarcode(item.getBarcode());
+        if(item1.isPresent()) {
+            throw new ItemAlreadyExistsException("item with barcode: " + item1.get().getBarcode() + " already exist");
         }
        return itemRepository.save(item);
     }
@@ -27,7 +27,7 @@ public class ItemService {
         return itemRepository.findAll();
     }
 
-    public Item getItemByBarcode(Long barcode) {
+    public Optional<Item> getItemByBarcode(String barcode) {
         return itemRepository.findItemByBarcode(barcode);
     }
 

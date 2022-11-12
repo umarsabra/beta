@@ -4,14 +4,12 @@ package com.marketapp.beta.Order;
 
 
 import com.marketapp.beta.Dto.OrderItemCreationDto;
-import com.marketapp.beta.Exception.ItemNotFoundException;
-import com.marketapp.beta.Exception.OrderItemNotFoundException;
-import com.marketapp.beta.Exception.OrderNotFoundException;
-import com.marketapp.beta.Exception.PendingOrderNotFoundException;
+import com.marketapp.beta.Exception.*;
 import com.marketapp.beta.Item.Item;
 import com.marketapp.beta.Item.ItemService;
 import com.marketapp.beta.OrderItem.OrderItem;
 import com.marketapp.beta.OrderItem.OrderItemService;
+import com.marketapp.beta.Utils.BarcodeAnalyser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,10 +57,21 @@ public class OrderController {
     }
 
     @PostMapping("/pending")
-    ResponseEntity<Order> handlePendingOrder(@RequestBody @Valid OrderItemCreationDto orderRequest) throws ItemNotFoundException {
+    ResponseEntity<Order> handlePendingOrder(@RequestBody @Valid OrderItemCreationDto orderRequest) throws ItemNotFoundException, InvalidBarcodeException {
+        BarcodeAnalyser barcodeAnalyser = new BarcodeAnalyser(orderRequest.getBarcode());
+        String priceBarcode = orderRequest.getBarcode();
+        String itemBarcode = orderRequest.getBarcode();
+        Integer physicalQuantity = orderRequest.getQuantity();
+        Integer actualQuantity = orderRequest.getQuantity();
 
-        Item requestItem = itemService.getItemByBarcode(orderRequest.getBarcode());
-        if(requestItem == null) throw new ItemNotFoundException("item with barcode: " + orderRequest.getBarcode() + " was not found");
+        if(barcodeAnalyser.getWeightItem()){
+            itemBarcode = barcodeAnalyser.getBarcode();
+            actualQuantity = barcodeAnalyser.getWeightInGrams() * orderRequest.getQuantity();
+        }
+        Optional<Item> requestItem = itemService.getItemByBarcode(itemBarcode);
+        if(requestItem.isEmpty()) throw new ItemNotFoundException("item with barcode: " + priceBarcode + " was not found");
+
+        requestItem.get().setPriceBarcode(priceBarcode);
 
         Optional<Order> pendingOrder = orderService.getPendingOrder();
 
@@ -72,9 +81,9 @@ public class OrderController {
             boolean itemExists = false;
 
             for (OrderItem orderItem: pendingOrderItems) {
-                if (Objects.equals(orderItem.getItemId(), requestItem.getId())) {
+                if (Objects.equals(orderItem.getPriceBarcode(), priceBarcode)) {
                     itemExists = true;
-                    List<OrderItem> updatedOrderItems = orderItemService.updatePendingOrderItemQuantity(orderRequest.getQuantity(), requestItem, orderItem);
+                    List<OrderItem> updatedOrderItems = orderItemService.updatePendingOrderItemQuantity(actualQuantity, physicalQuantity, requestItem.get(), orderItem);
                     Order updatedOrder = orderService.getOrderById(orderItem.getOrderId());
                     updatedOrder.setOrderItems(updatedOrderItems);
                     return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
@@ -82,14 +91,14 @@ public class OrderController {
             }
 
             if (!itemExists) {
-                List<OrderItem> updateOrderItems = orderItemService.addOrderItemToPendingOrder(orderRequest, requestItem, pendingOrder.get().getId());
+                List<OrderItem> updateOrderItems = orderItemService.addOrderItemToPendingOrder(priceBarcode, actualQuantity, physicalQuantity, requestItem.get(), pendingOrder.get().getId());
                 Order updateOrder = orderService.getOrderById(pendingOrder.get().getId());
                 updateOrder.setOrderItems(updateOrderItems);
                 return new ResponseEntity<>(updateOrder, HttpStatus.CREATED);
             }
 
         }
-        return new ResponseEntity<>(orderService.createPendingOrder(orderRequest, requestItem), HttpStatus.CREATED);
+        return new ResponseEntity<>(orderService.createPendingOrder(actualQuantity, physicalQuantity, priceBarcode, requestItem.get()), HttpStatus.CREATED);
 
     }
 

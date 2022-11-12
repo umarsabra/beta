@@ -25,17 +25,26 @@ public class OrderItemService {
     OrderService orderService;
 
 
-    public List<OrderItem> addOrderItemToPendingOrder(OrderItemCreationDto orderItemCreationDto, Item item, Long pendingOrderId) {
-        Integer quantity = orderItemCreationDto.getQuantity();
-        Float totalPrice = item.getPrice() * quantity;
-        Float totalCost = item.getCostPerItem() * quantity;
-        OrderItem newOrderItem = new OrderItem(
-                quantity,
-                totalPrice,
-                totalCost,
-                item.getId(),
-                pendingOrderId
-        );
+    public List<OrderItem> addOrderItemToPendingOrder(String priceBarcode,Integer actualQuantity, Integer physicalQuantity, Item item, Long pendingOrderId) {
+
+        float totalPrice = item.getPrice() * actualQuantity;
+        Float totalCost = item.getCostPerItem() * actualQuantity;
+
+
+        if(item.getIsWeightItem()){
+            Float gramPrice = item.getPrice() / 1000;
+            totalPrice = actualQuantity * gramPrice;
+        }
+
+        OrderItem newOrderItem = OrderItem.builder()
+                .quantity(actualQuantity)
+                .physicalQuantity(physicalQuantity)
+                .priceBarcode(priceBarcode)
+                .totalPrice(totalPrice)
+                .totalCost(totalCost)
+                .itemId(item.getId())
+                .orderId(pendingOrderId)
+                .build();
 
         orderItemRepository.save(newOrderItem);
         orderService.updateOrderDetails(pendingOrderId);
@@ -43,11 +52,15 @@ public class OrderItemService {
 
     }
 
-    public List<OrderItem> updatePendingOrderItemQuantity(Integer newQuantity, Item requestItem, OrderItem orderItem){
-        Float totalPrice = requestItem.getPrice() * newQuantity;
-        Float totalCost = requestItem.getCostPerItem() * newQuantity;
+    public List<OrderItem> updatePendingOrderItemQuantity(Integer actualQuantity,Integer physicalQuantity, Item item, OrderItem orderItem){
+        float totalPrice = item.getPrice() * actualQuantity;
+        Float totalCost = item.getCostPerItem() * actualQuantity;
 
-        orderItemRepository.updateOrderItem(newQuantity, totalPrice, totalCost, orderItem.getId());
+        if(item.getIsWeightItem()){
+            Float gramPrice = item.getPrice() / 1000;
+            totalPrice = actualQuantity * gramPrice;
+        }
+        orderItemRepository.updateOrderItem(actualQuantity, physicalQuantity, totalPrice, totalCost, orderItem.getId());
 
         orderService.updateOrderDetails(orderItem.getOrderId());
         return orderItemRepository.findOrderItemsWithItemsInformation(orderItem.getOrderId());

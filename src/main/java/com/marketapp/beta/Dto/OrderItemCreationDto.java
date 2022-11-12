@@ -16,7 +16,8 @@ import java.io.Serializable;
 @Builder
 public class OrderItemCreationDto implements Serializable {
     @NotNull
-    public Long barcode;
+    @Min(2)
+    public String barcode;
     @NotNull
     @Min(1)
     public Integer quantity;

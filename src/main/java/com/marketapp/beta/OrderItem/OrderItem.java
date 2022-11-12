@@ -33,14 +33,21 @@ public class OrderItem  {
     public String itemTitle;
     @Transient
     @JsonIgnore
-    public Long itemBarcode;
+    public String itemBarcode;
+    @JsonProperty("barcode")
+    private String priceBarcode;
+    @JsonIgnore
     private Integer quantity;
+    @JsonProperty("quantity")
+    private Integer physicalQuantity;
     @Transient
     @JsonProperty("price")
     private Float itemPrice;
 
     @JsonProperty("total_price")
     private Float totalPrice;
+
+
 
     @JsonProperty("total_cost")
     private Float totalCost;
@@ -50,14 +57,7 @@ public class OrderItem  {
     @JsonIgnore
     private Long orderId;
 
-    public OrderItem(Integer quantity, Float price, Float totalPrice, Float totalCost, Long itemId, Long orderId) {
-        this.quantity = quantity;
-        this.itemPrice = price;
-        this.totalPrice = totalPrice;
-        this.totalCost = totalCost;
-        this.itemId = itemId;
-        this.orderId = orderId;
-    }
+
 
     public OrderItem(Integer quantity, Float totalPrice, Float totalCost, Long itemId, Long orderId) {
         this.quantity = quantity;
@@ -67,5 +67,6 @@ public class OrderItem  {
         this.orderId = orderId;
     }
 
+    //Construct for order item in the order
 
 }

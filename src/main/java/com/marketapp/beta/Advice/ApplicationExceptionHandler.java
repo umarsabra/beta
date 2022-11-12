@@ -62,4 +62,12 @@ public class ApplicationExceptionHandler {
         errorMap.put("error_message", e.getMessage());
         return errorMap;
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidBarcodeException.class)
+    public Map<String, String> handleInvalidBarcodeException(InvalidBarcodeException e){
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error_message", e.getMessage());
+        return errorMap;
+    }
 }
