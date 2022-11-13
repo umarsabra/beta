@@ -66,7 +66,7 @@ public class OrderController {
 
         if(barcodeAnalyser.getWeightItem()){
             itemBarcode = barcodeAnalyser.getBarcode();
-            actualQuantity = barcodeAnalyser.getWeightInGrams() * orderRequest.getQuantity();
+            actualQuantity = barcodeAnalyser.getWeight() * orderRequest.getQuantity();
         }
         Optional<Item> requestItem = itemService.getItemByBarcode(itemBarcode);
         if(requestItem.isEmpty()) throw new ItemNotFoundException("item with barcode: " + priceBarcode + " was not found");

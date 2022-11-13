@@ -2,6 +2,7 @@ package com.marketapp.beta.Utils;
 
 
 import com.marketapp.beta.Exception.InvalidBarcodeException;
+import com.marketapp.beta.Item.UnitType;
 
 public class BarcodeAnalyser {
     private final String barcodeWeightItemPrefix = "22";
@@ -32,9 +33,6 @@ public class BarcodeAnalyser {
         }
     }
 
-    public String getBarcodeWeightItemPrefix() {
-        return barcodeWeightItemPrefix;
-    }
 
     public String getBarcode() {
         return barcode;
@@ -50,6 +48,18 @@ public class BarcodeAnalyser {
 
     public Integer getWeightInGrams() {
         return weightInGrams;
+    }
+
+    public Float getWeight(UnitType unitType){
+
+        switch (unitType){
+            case KG:
+            case L:
+                return (float) getWeightInGrams() / 1000;
+
+            default:
+                return (float) getWeightInGrams();
+        }
     }
 
 

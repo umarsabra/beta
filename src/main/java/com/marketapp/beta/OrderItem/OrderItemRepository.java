@@ -36,7 +36,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             "OI.priceBarcode, " +
             "OI.quantity, " +
             "OI.physicalQuantity, " +
-            "I.price, " +
+            "I.pricePerUnit, " +
             "OI.totalPrice, " +
             "OI.totalCost, " +
             "I.id, " +
@@ -54,7 +54,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             "OI.priceBarcode, " +
             "OI.quantity, " +
             "OI.physicalQuantity, " +
-            "I.price, " +
+            "I.pricePerUnit, " +
             "OI.totalPrice, " +
             "OI.totalCost, " +
             "I.id, " +

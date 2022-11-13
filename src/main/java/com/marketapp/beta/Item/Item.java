@@ -1,11 +1,10 @@
 package com.marketapp.beta.Item;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import com.marketapp.beta.ItemPackage.ItemPackage;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -14,9 +13,9 @@ import javax.validation.constraints.NotNull;
 
 
 @Entity
-@ToString
-@Data
+@NoArgsConstructor
 @Builder
+@Data
 @AllArgsConstructor
 public class Item {
     @Id
@@ -31,42 +30,40 @@ public class Item {
     )
     private Long id;
     @NotNull
+    private String barcode;
+    @NotNull
     private String title;
     @NotNull
-    private String barcode;
-    @Transient
-    private String priceBarcode;
+    private UnitType unitType;
     @NotNull
-    private Float price;
+    private Float pricePerUnit;
     @Min(1)
+    @NotNull
     private Integer quantity;
     @NotNull
-    @JsonProperty("total_cost")
-    private Float totalCost;
-    @JsonProperty("cost_per_item")
+    private Float costPerQuantity;
+    private Float weightPerQuantity;
+
+
+    //Relations
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private ItemPackage itemPackage;
+    //Transients
     @Transient
-    private Float costPerItem;
+    private Float netWeight;
+    @Transient
+    private Float costPerUnit;
 
-    @NotNull
-    private Boolean isWeightItem;
-
-    public Item() {
+    public Float getNetWeight(){
+        return quantity * weightPerQuantity;
     }
-
-    public Item(String title, String barcode, Float price, Integer quantity, Float totalCost) {
-        this.title = title;
-        this.barcode = barcode;
-        this.price = price;
-        this.quantity = quantity;
-        this.totalCost = totalCost;
-
+    public Float getCostPerUnit() {
+        return costPerQuantity/quantity;
     }
 
 
-    public Float getCostPerItem() {
-        return totalCost/quantity;
-    }
-    public Float getPrice(){
-        return price;
-    }
+    @Transient
+    @JsonIgnore
+    private String priceBarcode;
+
 }

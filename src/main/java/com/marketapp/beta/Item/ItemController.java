@@ -24,8 +24,10 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<Item> getItems(){
-        return itemService.getAllItems();
+    public ResponseEntity<List<Item>> getItems(){
+
+        List<Item> items = itemService.getAllItems();
+        return ResponseEntity.ok().body(items);
     }
 
     @GetMapping("/{barcode}")

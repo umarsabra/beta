@@ -1,16 +1,16 @@
 package com.marketapp.beta.Order;
 
 
-import com.marketapp.beta.Dto.OrderItemCreationDto;
+
 
 
 import com.marketapp.beta.Item.Item;
 
+import com.marketapp.beta.Item.UnitType;
 import com.marketapp.beta.OrderItem.OrderItem;
 import com.marketapp.beta.OrderItem.OrderItemRepository;
 
 
-import com.marketapp.beta.OrderItem.OrderItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +31,11 @@ public class OrderService {
 
     public Order createPendingOrder(Integer actualQuantity, Integer physicalQuantity, String priceBarcode,Item item) {
 
-        Float totalCost = item.getCostPerItem() * actualQuantity;
-        float totalPrice = item.getPrice() * actualQuantity;
+        Float totalCost = item.getCostPerUnit() * actualQuantity;
+        float totalPrice = item.getPricePerUnit() * actualQuantity;
 
-        if(item.getIsWeightItem()){
-            Float gramPrice = item.getPrice() / 1000;
+        if(item.getUnitType() == UnitType.L){
+            Float gramPrice = item.getPricePerUnit() / 1000;
             totalPrice = actualQuantity * gramPrice;
         }
 
@@ -51,7 +51,7 @@ public class OrderService {
                 .itemId(item.getId())
                 .itemBarcode(item.getBarcode())
                 .priceBarcode(priceBarcode)
-                .itemPrice(item.getPrice())
+                .itemPrice(item.getPricePerUnit())
                 .itemTitle(item.getTitle())
                 .quantity(actualQuantity)
                 .physicalQuantity(physicalQuantity)

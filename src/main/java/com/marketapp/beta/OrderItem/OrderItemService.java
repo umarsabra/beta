@@ -1,9 +1,9 @@
 package com.marketapp.beta.OrderItem;
 
 
-import com.marketapp.beta.Dto.OrderItemCreationDto;
 import com.marketapp.beta.Item.Item;
 
+import com.marketapp.beta.Item.UnitType;
 import com.marketapp.beta.Order.Order;
 import com.marketapp.beta.Order.OrderService;
 
@@ -27,12 +27,12 @@ public class OrderItemService {
 
     public List<OrderItem> addOrderItemToPendingOrder(String priceBarcode,Integer actualQuantity, Integer physicalQuantity, Item item, Long pendingOrderId) {
 
-        float totalPrice = item.getPrice() * actualQuantity;
-        Float totalCost = item.getCostPerItem() * actualQuantity;
+        float totalPrice = item.getPricePerUnit() * actualQuantity;
+        Float totalCost = item.getCostPerUnit() * actualQuantity;
 
 
-        if(item.getIsWeightItem()){
-            Float gramPrice = item.getPrice() / 1000;
+        if(item.getUnitType() == UnitType.L){
+            Float gramPrice = item.getPricePerUnit() / 1000;
             totalPrice = actualQuantity * gramPrice;
         }
 
@@ -53,11 +53,11 @@ public class OrderItemService {
     }
 
     public List<OrderItem> updatePendingOrderItemQuantity(Integer actualQuantity,Integer physicalQuantity, Item item, OrderItem orderItem){
-        float totalPrice = item.getPrice() * actualQuantity;
-        Float totalCost = item.getCostPerItem() * actualQuantity;
+        float totalPrice = item.getPricePerUnit() * actualQuantity;
+        Float totalCost = item.getCostPerUnit() * actualQuantity;
 
-        if(item.getIsWeightItem()){
-            Float gramPrice = item.getPrice() / 1000;
+        if(item.getUnitType() == UnitType.L){
+            Float gramPrice = item.getPricePerUnit() / 1000;
             totalPrice = actualQuantity * gramPrice;
         }
         orderItemRepository.updateOrderItem(actualQuantity, physicalQuantity, totalPrice, totalCost, orderItem.getId());
