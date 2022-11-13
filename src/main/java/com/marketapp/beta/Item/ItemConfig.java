@@ -1,7 +1,6 @@
 package com.marketapp.beta.Item;
 
 
-import com.marketapp.beta.ItemPackage.ItemPackage;
 import org.springframework.boot.CommandLineRunner;
 
 import org.springframework.context.annotation.Bean;
@@ -18,14 +17,6 @@ public class ItemConfig {
     ){
         return  args -> {
 
-            ItemPackage itemPackage1 = ItemPackage.builder()
-                    .barcode("6221234567810")
-                    .costPerPackage(30f)
-                    .packageType(ItemPackage.PackageType.PACKAGE)
-                    .weightPerPackage(2100f)
-                    .quantity(1)
-                    .pricePerPackage(36f)
-                    .build();
 
             Item item1 = Item.builder()
                     .barcode("6221234567891")
@@ -34,7 +25,6 @@ public class ItemConfig {
                     .pricePerUnit(6F)
                     .quantity(6)
                     .weightPerQuantity(2100f)
-                    .itemPackage(itemPackage1)
                     .costPerQuantity(5f)
                     .build();
 

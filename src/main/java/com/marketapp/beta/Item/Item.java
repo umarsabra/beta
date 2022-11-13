@@ -2,8 +2,6 @@ package com.marketapp.beta.Item;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.marketapp.beta.ItemPackage.ItemPackage;
 import lombok.*;
 
 import javax.persistence.*;
@@ -46,8 +44,6 @@ public class Item {
 
 
     //Relations
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private ItemPackage itemPackage;
     //Transients
     @Transient
     private Float netWeight;
