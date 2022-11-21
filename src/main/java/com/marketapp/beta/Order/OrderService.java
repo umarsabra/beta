@@ -4,6 +4,7 @@ package com.marketapp.beta.Order;
 
 
 
+import com.marketapp.beta.Dto.Cart;
 import com.marketapp.beta.Item.Item;
 
 import com.marketapp.beta.Item.UnitType;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -72,6 +74,10 @@ public class OrderService {
 
     public Optional<Order> getPendingOrder() {
         return orderRepository.findPendingOrder();
+    }
+
+    public Cart getPendingOrder2() {
+        return orderRepository.findPendingOrder2();
     }
 
 

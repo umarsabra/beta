@@ -34,7 +34,7 @@ public class ItemService {
     @Transactional
     public void sell(List<OrderItem> orderItems){
         for (OrderItem orderItem: orderItems){
-            itemRepository.sellItem(orderItem.getQuantity(), orderItem.getItemId());
+            itemRepository.sellPieceItem(orderItem.getQuantity(), orderItem.getItemId());
         }
 
     }

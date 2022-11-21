@@ -41,23 +41,15 @@ public class Item {
     @NotNull
     private Float costPerQuantity;
     private Float weightPerQuantity;
+    //Programmatic set
+    private Float netWeight;
 
-
-    //Relations
     //Transients
     @Transient
-    private Float netWeight;
-    @Transient
     private Float costPerUnit;
-
-    public Float getNetWeight(){
-        return quantity * weightPerQuantity;
-    }
     public Float getCostPerUnit() {
         return costPerQuantity/quantity;
     }
-
-
     @Transient
     @JsonIgnore
     private String priceBarcode;

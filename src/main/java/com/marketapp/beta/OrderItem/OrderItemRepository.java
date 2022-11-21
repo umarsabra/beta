@@ -1,5 +1,6 @@
 package com.marketapp.beta.OrderItem;
 
+import com.marketapp.beta.Dto.CartItemOut;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -64,6 +65,19 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             "WHERE OI.orderId = ?1"
     )
     List<OrderItem> findOrderItemsWithItemsInformation(Long orderId);
+
+
+    @Query("SELECT NEW com.marketapp.beta.Dto.CartItemOut(" +
+            "I.id, " +
+            "OI.orderId, " +
+            "OI.id, " +
+            "I.barcode, " +
+            "OI.quantity, " +
+            "OI.totalPrice) " +
+            "FROM OrderItem OI " +
+            "INNER JOIN Item I ON OI.itemId = I.id " +
+            "WHERE OI.orderId = ?1")
+    List<CartItemOut> findCartItems(Long orderId);
 
 
 

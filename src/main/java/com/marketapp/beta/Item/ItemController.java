@@ -1,9 +1,11 @@
 package com.marketapp.beta.Item;
 
 
+import com.marketapp.beta.Dto.ItemCreationDot;
 import com.marketapp.beta.Exception.ItemAlreadyExistsException;
 import com.marketapp.beta.Exception.ItemNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +21,22 @@ public class ItemController {
     ItemService itemService;
 
     @PostMapping
-    public Item createItem(@RequestBody @Valid Item item) throws ItemAlreadyExistsException {
-        return itemService.addItem(item);
+    public ResponseEntity<Item> createItem(@RequestBody @Valid ItemCreationDot itemRequest) throws ItemAlreadyExistsException {
+        Item item =  Item.builder()
+                .title(itemRequest.getTitle())
+                .barcode(itemRequest.getBarcode())
+                .unitType(itemRequest.getUnitType())
+                .pricePerUnit(itemRequest.getPricePerUnit())
+                .quantity(itemRequest.getQuantity())
+                .costPerQuantity(itemRequest.getCostPerQuantity())
+                .weightPerQuantity(itemRequest.getWeightPerQuantity())
+                .netWeight(itemRequest.getNetWeight())
+                .build();
+        return new ResponseEntity<>(itemService.addItem(item), HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<Item>> getItems(){
-
         List<Item> items = itemService.getAllItems();
         return ResponseEntity.ok().body(items);
     }

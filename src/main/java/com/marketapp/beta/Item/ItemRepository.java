@@ -11,7 +11,11 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Modifying
     @Query("UPDATE Item i SET i.quantity = i.quantity - ?1 WHERE i.id = ?2")
-    void sellItem(Integer quantity, Long itemId);
+    void sellPieceItem(Integer quantity, Long itemId);
+
+    @Modifying
+    @Query("UPDATE Item i SET i.net_weight = i.net_weight - ?1 WHERE i.id = ?2")
+    void sellWeightItem(Float weight, Long id);
 
     Optional<Item> findItemByBarcode(String barcode);
 }

@@ -5,7 +5,6 @@ import com.marketapp.beta.Exception.InvalidBarcodeException;
 import com.marketapp.beta.Item.UnitType;
 
 public class BarcodeAnalyser {
-    private final String barcodeWeightItemPrefix = "22";
     private final String barcode;
     private final String priceBarcode;
     private final Boolean isWeightItem;
@@ -17,6 +16,7 @@ public class BarcodeAnalyser {
     public BarcodeAnalyser(String priceBarcode) throws InvalidBarcodeException {
         this.priceBarcode = priceBarcode;
         String prefix = priceBarcode.substring(0, 2);
+        String barcodeWeightItemPrefix = "22";
         if(prefix.equals(barcodeWeightItemPrefix)){
             try{
                 this.isWeightItem = true;

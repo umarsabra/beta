@@ -7,6 +7,7 @@ import com.marketapp.beta.Dto.OrderItemCreationDto;
 import com.marketapp.beta.Exception.*;
 import com.marketapp.beta.Item.Item;
 import com.marketapp.beta.Item.ItemService;
+import com.marketapp.beta.Item.UnitType;
 import com.marketapp.beta.OrderItem.OrderItem;
 import com.marketapp.beta.OrderItem.OrderItemService;
 import com.marketapp.beta.Utils.BarcodeAnalyser;
@@ -64,10 +65,10 @@ public class OrderController {
         Integer physicalQuantity = orderRequest.getQuantity();
         Integer actualQuantity = orderRequest.getQuantity();
 
-        if(barcodeAnalyser.getWeightItem()){
-            itemBarcode = barcodeAnalyser.getBarcode();
-            actualQuantity = barcodeAnalyser.getWeight() * orderRequest.getQuantity();
-        }
+//        if(barcodeAnalyser.getWeightItem()){
+//            itemBarcode = barcodeAnalyser.getBarcode();
+//            actualQuantity = barcodeAnalyser.getWeight(UnitType.GM) * orderRequest.getQuantity();
+//        }
         Optional<Item> requestItem = itemService.getItemByBarcode(itemBarcode);
         if(requestItem.isEmpty()) throw new ItemNotFoundException("item with barcode: " + priceBarcode + " was not found");
 
